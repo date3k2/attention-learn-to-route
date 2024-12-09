@@ -13,7 +13,7 @@ import argparse
 import numpy as np
 from utils.data_utils import load_dataset, save_dataset
 from gurobipy import *
-
+import math
 
 def solve_euclidian_tsp(points, threads=0, timeout=None, gap=None):
     """
@@ -68,18 +68,18 @@ def solve_euclidian_tsp(points, threads=0, timeout=None, gap=None):
 
     # Create variables
 
-    vars = m.addVars(dist.keys(), obj=dist, vtype=GRB.BINARY, name='e')
-    for i,j in vars.keys():
-        vars[j,i] = vars[i,j] # edge in opposite direction
+    # vars = m.addVars(dist.keys(), obj=dist, vtype=GRB.BINARY, name='e')
+    # for i,j in vars.keys():
+    #     vars[j,i] = vars[i,j] # edge in opposite direction
 
     # You could use Python looping constructs and m.addVar() to create
     # these decision variables instead.  The following would be equivalent
     # to the preceding m.addVars() call...
     #
-    # vars = tupledict()
-    # for i,j in dist.keys():
-    #   vars[i,j] = m.addVar(obj=dist[i,j], vtype=GRB.BINARY,
-    #                        name='e[%d,%d]'%(i,j))
+    vars = tupledict()
+    for i,j in dist.keys():
+      vars[i,j] = m.addVar(obj=dist[i,j], vtype=GRB.BINARY,
+                           name='e[%d,%d]'%(i,j))
 
 
     # Add degree-2 constraint
